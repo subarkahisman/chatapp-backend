@@ -1,5 +1,21 @@
+import User from "@/models/User";
 import { RequestHandler } from "express";
 
-export const Register: RequestHandler = (req, res) => {
-  res.send("Test Register");
+export const RegisterUser: RequestHandler = async (req, res) => {
+  try {
+    const { name, email, password } = req.body;
+    await User.create({
+      name,
+      email,
+      password,
+    });
+
+    res.status(201).json({
+      message: "Register User Berhasil Dilakukan",
+    });
+  } catch (error) {
+    res.status(400).json({
+      error,
+    });
+  }
 };

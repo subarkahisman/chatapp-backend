@@ -12,5 +12,5 @@ export const errorHandler: ErrorRequestHandler = (err, req, res, next) => {
 };
 
 export const NotFound: RequestHandler = (req, res) => {
-  res.status(404).send("Route tidak ditemukan");
+  res.status(404).json({ message: "Route tidak ditemukan" });
 };

@@ -15,12 +15,13 @@ interface UserDocument extends Document {
 const UserSchema = new Schema<UserDocument>(
   {
     email: {
-      required: true,
+      required: [true, "Email wajib diisi"],
       type: String,
       unique: [true, "Email Sudah Terdaftar"],
+      match: [/\S+@\S+\.\S+/, "Email Format is Invalid"],
     },
     name: {
-      required: true,
+      required: [true, "Nama wajib diisi"],
       type: String,
       unique: [
         true,
@@ -28,7 +29,7 @@ const UserSchema = new Schema<UserDocument>(
       ],
     },
     password: {
-      required: true,
+      required: [true, "Password wajib diisi"],
       type: String,
       min: [6, "Password minimal 6 karakter"],
     },

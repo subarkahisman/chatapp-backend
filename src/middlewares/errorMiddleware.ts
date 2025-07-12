@@ -1,3 +1,4 @@
+import { error } from "console";
 import { ErrorRequestHandler, RequestHandler } from "express";
 import mongoose from "mongoose";
 
@@ -9,6 +10,11 @@ export const errorHandler: ErrorRequestHandler = (err, req, res, next) => {
       stack: err.stack,
     });
   }
+
+  res.status(500).json({
+    error: err.message || "Something were wrong",
+    stack: err.stack,
+  });
 };
 
 export const NotFound: RequestHandler = (req, res) => {

@@ -1,4 +1,3 @@
-import { error } from "console";
 import { ErrorRequestHandler, RequestHandler } from "express";
 import mongoose from "mongoose";
 

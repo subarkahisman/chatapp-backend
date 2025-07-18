@@ -1,5 +1,8 @@
 import User from "@/models/User";
 import { RequestHandler } from "express";
+import jwt from "jsonwebtoken";
+
+const jwtSecret = process.env.JWT_SECRET!;
 
 export const RegisterUser: RequestHandler = async (req, res) => {
   const { name, email, password } = req.body;
@@ -35,5 +38,30 @@ export const LoginUser: RequestHandler = async (req, res) => {
     return;
   }
 
-  res.send("Login berhasil");
+  const isPasswordMatched = await userDoc.comparePassword(password);
+
+  if (!isPasswordMatched) {
+    res.status(403).json({
+      message: "Password Anda Salah !",
+    });
+
+    return;
+  }
+
+  const AccressToken = jwt.sign({ id: userDoc._id }, jwtSecret);
+
+  userDoc.token = AccressToken;
+
+  await userDoc.save();
+
+  res.status(200).json({
+    message: "Berhasil Login",
+    user: {
+      id: userDoc._id,
+      email: userDoc.email,
+      name: userDoc.name,
+      avatar: userDoc.avatar?.url,
+    },
+    token: AccressToken,
+  });
 };

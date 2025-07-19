@@ -85,3 +85,21 @@ export const LogoutUser: RequestHandler = async (req, res) => {
     message: "Logout Berhasil !",
   });
 };
+
+export const getProfile: RequestHandler = async (req, res) => {
+  res.json({
+    user: req.user,
+  });
+};
+
+export const getUsers: RequestHandler = async (req, res) => {
+  const usersData = await User.find({ _id: { $ne: req.user.id } }).select([
+    "-password",
+    "-token",
+  ]);
+
+  res.json({
+    message: "All Users",
+    data: usersData,
+  });
+};

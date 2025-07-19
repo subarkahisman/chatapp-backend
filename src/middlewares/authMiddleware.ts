@@ -9,6 +9,7 @@ interface UserDocument {
   name: string;
   email: string;
   avatar?: string;
+  bio?: string;
 }
 
 declare global {
@@ -46,6 +47,7 @@ export const isAuth: RequestHandler = async (req, res, next) => {
       email: userDoc.email,
       name: userDoc.name,
       avatar: userDoc.avatar?.url,
+      bio: userDoc.bio,
     };
 
     next();

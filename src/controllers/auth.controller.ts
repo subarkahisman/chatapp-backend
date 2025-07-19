@@ -65,3 +65,23 @@ export const LoginUser: RequestHandler = async (req, res) => {
     token: AccressToken,
   });
 };
+
+export const LogoutUser: RequestHandler = async (req, res) => {
+  const userDoc = await User.findOne({ _id: req.user.id });
+
+  if (!userDoc) {
+    res.status(403).json({
+      message: "User tidak ditemukan",
+    });
+
+    return;
+  }
+
+  userDoc.token = null;
+
+  await userDoc.save();
+
+  res.status(200).json({
+    message: "Logout Berhasil !",
+  });
+};

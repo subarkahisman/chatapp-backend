@@ -5,7 +5,7 @@ interface UserDocument extends Document {
   email: string;
   password: string;
   name: string;
-  token: string;
+  token: string | null;
   avatar?: {
     url: string;
     id: string;

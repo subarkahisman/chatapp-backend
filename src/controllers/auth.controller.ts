@@ -1,4 +1,5 @@
 import User from "@/models/User";
+import cloudinary from "@/utils/cloudinary";
 import { RequestHandler } from "express";
 import jwt from "jsonwebtoken";
 
@@ -102,4 +103,74 @@ export const getUsers: RequestHandler = async (req, res) => {
     message: "All Users",
     data: usersData,
   });
+};
+
+export const uploadImageAvatar: RequestHandler = async (req, res) => {
+  try {
+    if (!req.file) {
+      res.status(422).json({
+        message: "File image belum ada yang diupload !",
+      });
+
+      return;
+    }
+
+    const userDoc = await User.findById(req.user.id);
+    if (!userDoc) {
+      res.status(404).json({
+        message: "User tidak ditemukan !",
+      });
+
+      return;
+    }
+
+    if (userDoc.avatar && userDoc.avatar.id) {
+      try {
+        await cloudinary.uploader.destroy(userDoc.avatar.id);
+      } catch (error) {
+        console.log("Error hapus avatar lama : ", error);
+        res.status(422).json({
+          message: "Gagal hapus avatar !",
+        });
+
+        return;
+      }
+    }
+
+    const fileStr = `data:${
+      req.file.mimetype
+    };base64,${req.file.buffer.toString("base64")}`;
+
+    const result = await cloudinary.uploader.upload(fileStr, {
+      folder: "profile",
+      transformation: {
+        width: 300,
+        height: 300,
+        crop: "thumb",
+        gravity: "face",
+      },
+    });
+
+    userDoc.avatar = {
+      url: result.secure_url,
+      id: result.public_id,
+    };
+
+    await userDoc.save();
+
+    res.status(201).json({
+      message: "Profile berhasil diupload",
+      user: {
+        id: userDoc._id,
+        name: userDoc.name,
+        email: userDoc.email,
+        avatar: userDoc.avatar.url,
+      },
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: "Upload Profile terjadi kesalahan",
+      error: error,
+    });
+  }
 };

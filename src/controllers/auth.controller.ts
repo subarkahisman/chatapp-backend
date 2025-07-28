@@ -174,3 +174,33 @@ export const uploadImageAvatar: RequestHandler = async (req, res) => {
     });
   }
 };
+
+export const updateProfileUserByToken: RequestHandler = async (req, res) => {
+  const userDoc = await User.findById(req.user.id);
+
+  if (!userDoc) {
+    res.status(404).json({
+      message: "User tidak ditemukan",
+    });
+
+    return;
+  }
+
+  const { name, bio } = req.body;
+
+  userDoc.name = name;
+  userDoc.bio = bio;
+
+  await userDoc.save();
+
+  res.status(201).json({
+    message: "Update berhasil",
+    data: {
+      id: userDoc._id,
+      name: userDoc.name,
+      bio: userDoc.bio,
+      email: userDoc.email,
+      avatar: userDoc.avatar?.url,
+    },
+  });
+};

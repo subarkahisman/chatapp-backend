@@ -204,3 +204,62 @@ export const updateProfileUserByToken: RequestHandler = async (req, res) => {
     },
   });
 };
+
+export const updatePassowrdByToken: RequestHandler = async (req, res) => {
+  const { old_password, new_password, confirm_new_password } = req.body;
+
+  if (!old_password || !new_password || !confirm_new_password) {
+    res.status(422).json({
+      message: "Inputan password ada yang masih belum lengkap !",
+    });
+
+    return;
+  }
+
+  const userDoc = await User.findById(req.user.id);
+
+  if (!userDoc) {
+    res.status(404).json({
+      message: "User tidak ditemukan !",
+    });
+
+    return;
+  }
+
+  const isPasswordMatched = await userDoc.comparePassword(old_password);
+
+  if (!isPasswordMatched) {
+    res.status(422).json({
+      message:
+        "Password lama yang diinputkan tidak sesuai dengan yang ada di basis data !",
+    });
+
+    return;
+  }
+
+  if (new_password.length <= 6) {
+    res.status(422).json({
+      message: "Password baru minimal 6 karakter !",
+    });
+
+    return;
+  }
+
+  if (new_password !== confirm_new_password) {
+    res.status(422).json({
+      message: "Password baru tidak sama dengan confirm password !",
+    });
+
+    return;
+  }
+
+  userDoc.password = new_password;
+
+  await userDoc.save();
+
+  res.status(201).json({
+    message: "Password berhasil di-update !",
+  });
+
+  return;
+};

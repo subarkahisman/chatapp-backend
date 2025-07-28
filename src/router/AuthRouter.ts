@@ -4,6 +4,7 @@ import {
   LoginUser,
   LogoutUser,
   RegisterUser,
+  updatePassowrdByToken,
   updateProfileUserByToken,
   uploadImageAvatar,
 } from "@/controllers/auth.controller";
@@ -20,5 +21,6 @@ authRouter.get("/profile", isAuth, getProfile);
 authRouter.get("/users", isAuth, getUsers);
 authRouter.post("/upload", isAuth, upload.single("avatar"), uploadImageAvatar);
 authRouter.put("/update-user", isAuth, updateProfileUserByToken);
+authRouter.put("/update-password", isAuth, updatePassowrdByToken);
 
 export default authRouter;
